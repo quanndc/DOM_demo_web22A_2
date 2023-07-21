@@ -1,128 +1,91 @@
-let container = document.getElementById('container');
-let body = document.body;
-body.style = "font-family: Maven Pro";
+import myJson from './data.json' assert {type: 'json'};
 
-//navbar
+let container = document.getElementById("container");
 
-function buildNavbar(){
-    let navbar = document.createElement('div')
-    navbar.className = "navbar";
-    /**@type {CSSStyleDeclaration}*/
-    let navBarStyle = {
-        width: "100%",
-        height: "80px",
-        display: "flex"
-    };
-    Object.assign(navbar.style, navBarStyle);
 
-    let leftNavbar = document.createElement('div');
-    
-    /**@type {CSSStyleDeclaration}*/
-    let leftNavbarStyle = {
-        width: "50%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
+console.log(myJson);
+
+
+for(let i = 0; i < myJson.length; i++){
+    let food = myJson[i];
+    let card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+        <h2>${food.name}</h2>
+        <p>${food.price}</p>
+        `;
+
+    let button = document.createElement("button");
+    button.innerText = "Add to cart";
+    button.addEventListener("click", () => {
+        addToCart(food);
+    })
+    card.appendChild(button);
+    container.appendChild(card);
+}
+
+
+class Food{
+    /**
+     * @param {string} id
+     * @param {string} name
+     * @param {number} price
+     * @param {number} stock
+     */
+
+    constructor(id, name, price, stock){
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
     }
-    Object.assign(leftNavbar.style, leftNavbarStyle);
-    navbar.appendChild(leftNavbar);
+}
+/**@type {Food[]} */
+let cart = [];
 
-    let rightNavbar = document.createElement('div');
-    
-    /**@type {CSSStyleDeclaration}*/
-    let rightNavbarStyle = {
-        width: "50%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
+
+
+function addToCart(food){
+    let index = cart.findIndex((item) => {
+        return item.id == food.id;
+    })
+    if(index != -1){
+        cart[index].quantity++;
+        console.log(cart);
+        return;
     }
-    Object.assign(rightNavbar.style, rightNavbarStyle);
-    navbar.appendChild(rightNavbar);
+    cart.push({
+        id: food.id,
+        quantity: 1
+    })
+    console.log(cart);
+    return;
+}
 
-    let navBarLogo = document.createElement('img');
-    navBarLogo.src = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Shopee.svg/1200px-Shopee.svg.png";
-    /**@type {CSSStyleDeclaration}*/
-    let navBarLogoStyle = {
-        width: "35%",
-        height: "auto",
+let chargeButton = document.createElement("button");
+chargeButton.innerHTML = "Thanh toán";
+chargeButton.addEventListener("click", () => {
+    tinhTien();
+})
+
+container.appendChild(chargeButton);
+
+function tinhTien(){
+    if(cart.length == 0){
+        alert("Chưa có món ăn nào trong giỏ hàng");
     }
-    Object.assign(navBarLogo.style, navBarLogoStyle);
-
-    let signIn = document.createElement('div');
-    signIn.innerHTML = "Đăng nhập";
-    /**@type {CSSStyleDeclaration}*/
-    let signInStyle = {
-        width: "50%",
-        height: "35%",
-        fontSize: "25px",
-        fontWeight: "500",
-    }
-
-    Object.assign(signIn.style, signInStyle);
-
-
-    let leftNavbarContent = document.createElement('div');
-    /**@type {CSSStyleDeclaration}*/
-    let leftNavbarContentStyle = {
-        width: "50%",
-        height: "80%",
-        display: "flex",
-        columnGap: "10px",
-        alignItems: "center"
-    }
-    Object.assign(leftNavbarContent.style, leftNavbarContentStyle);
-    leftNavbar.appendChild(leftNavbarContent);
-    leftNavbarContent.appendChild(navBarLogo);
-    leftNavbarContent.appendChild(signIn);
-
-
-    let rightNavbarContent = document.createElement('div');
-    /**@type {CSSStyleDeclaration}*/
-    let rightNavbarContentStyle = {
-        width: "50%",
-        height: "45%",
-        display: "flex",
-        justifyContent: "flex-end",
-        alignItems: "center",
-        fontSize: "16px",
-    }
-    Object.assign(rightNavbarContent.style, rightNavbarContentStyle);
-
-
-    let helpCenter = document.createElement('a');
-    helpCenter.href = "https://help.shopee.vn/portal";
-    helpCenter.innerHTML = "Bạn cần giúp đỡ?";
-    /**@type {CSSStyleDeclaration}*/
-    let helpCenterStyle = {
-        textDecoration: "none",
-        color: "#ee4d2d",
-    }
-    Object.assign(helpCenter.style, helpCenterStyle);
-
-    rightNavbarContent.appendChild(helpCenter);
-    rightNavbar.appendChild(rightNavbarContent);
-    return navbar;
+    let total = 0;
+    cart.forEach((item) => {
+        myJson.forEach((food) => {
+            if(food.id == item.id){
+                total += food.price * item.quantity;
+            }
+        })
+    })
+    alert("Tổng tiền là: " + total);
+    cart = [];
 }
 
 
 
-function buildMainBody(){
-    let main = document.createElement('div')
-    main.className = "main";
-    /**@type {CSSStyleDeclaration}*/
-    let mainStyle = {
-        width: "100%",
-        height: "600px",
-        display: "flex",
-        backgroundColor: "#ee4d2d"
-    };
-    Object.assign(main.style, mainStyle);
 
-    return main;
-}
-
-
-container.appendChild(buildNavbar());
-container.appendChild(buildMainBody());
